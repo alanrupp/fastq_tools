@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """
 Create a CSV file of GO terms and genes from GAF file
 """
@@ -9,23 +11,28 @@ def open_gz(file):
     output = subprocess.check_output('zcat ' + file, shell=True)
     output = output.decode('UTF-8')
     output = output.split('\n')
-    print('Reading file: ' + str(len(output)) + ' lines')
-    return(output)
+    print(f"Reading file: {str(len(output))} lines")
+    return output
 
 def gaf_to_dict(gaf):
+    print("Processing GO terms")
     results = dict()
     for line in gaf:
         if line.startswith('!'): continue
         else:
-            gene = line.split()[2]
             go_term = line.split()[3]
             if go_term.startswith('GO'):
-                results.setdefault(go_term, []).append(gene)
-    print('Processing GO terms: ' + str(len(results)) + ' terms')
-    return(results)
+                gene = line.split()[2]
+                if go_term not in results.keys():
+                    results[go_term] = [gene]
+                else:
+                    if gene not in results[go_term]:
+                        results.setdefault(go_term, []).append(gene)
+    print(f"{str(len(results))} terms")
+    return results
 
 def write_csv(d, csv_file):
-    print('Writing CSV file: ' + csv_file)
+    print(f"Writing CSV file: {csv_file}")
     with open(csv_file, 'w') as f:
         f.write('GO,gene\n')
         for key in list(d.keys()):
