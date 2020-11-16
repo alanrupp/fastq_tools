@@ -5,6 +5,15 @@ import argparse
 import re
 import os
 
+# function to grab info associated with user input fields
+def grab_info(field):
+    info = re.findall(field + ' \"(.*?)\"', line)
+    if len(info) == 0:
+        info = ""
+    else:
+        info = info[0]
+    return(info)
+
 # set up argsparse
 parser = argparse.ArgumentParser(description='Convert a GTF file to CSV')
 parser.add_argument('--gtf', help='input GTF file', type=str)
@@ -33,14 +42,7 @@ if 'transcript_id' not in args.fields:
 else:
     transcript_id = np.where(np.array(args.fields) == 'transcript_id')[0][0]
 
-# function to grab info associated with user input fields
-def grab_info(field):
-    info = re.findall(field + ' \"(.*?)\"', line)
-    if len(info) == 0:
-        info = ""
-    else:
-        info = info[0]
-    return(info)
+# check to see
 
 # check to see if fields are in GTF file
 with open(args.gtf, 'r') as f:
